@@ -1,8 +1,12 @@
-﻿using Domain.Entities;
+﻿using Applicaton.Interfaces.Repositories;
+using Applicaton.Interfaces.UnitOfWorks;
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Context;
-using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories;
+using Persistence.UnitOfWorks;
 
 
 namespace Persistence;
@@ -14,6 +18,9 @@ public static class Registration
         services.AddDbContext<AppDbContext>(opt =>
         opt.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+        services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+        services.AddScoped(typeof(ICustomerRepository), typeof(CustomerRepository));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services
             .AddIdentityCore<AppUser>(opt =>

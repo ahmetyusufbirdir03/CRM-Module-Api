@@ -1,6 +1,4 @@
-﻿using Shared.Bases;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class CustomerState 
 {

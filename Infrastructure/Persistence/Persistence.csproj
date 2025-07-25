@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Applicaton\Applicaton.csproj" />
     <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\CrmModuleApi.Shared\CrmModuleApi.Shared.csproj" />
   </ItemGroup>
 
 </Project>
