@@ -1,8 +1,8 @@
-﻿using Shared.Bases;
+﻿using CrmModuleApi.Shared.Bases;
 
 namespace Domain.Entities;
 
-public class ForwardPlan : BaseEntity
+public class ForwardPlan : EntityBase
 {
     public int Id { get; set; }
     public string Title { get; set; }

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\Shared\CrmModuleApi.Shared\CrmModuleApi.Shared.csproj" />
   </ItemGroup>
 
 </Project>

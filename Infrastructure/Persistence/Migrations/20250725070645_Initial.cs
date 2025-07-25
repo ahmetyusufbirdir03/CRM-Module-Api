@@ -97,8 +97,8 @@ namespace Persistence.Migrations
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -270,8 +270,8 @@ namespace Persistence.Migrations
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -329,8 +329,8 @@ namespace Persistence.Migrations
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -386,8 +386,8 @@ namespace Persistence.Migrations
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -473,7 +473,7 @@ namespace Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Customers",
-                columns: new[] { "Id", "Address", "City", "Country", "CreatedBy", "CreatedDate", "DeleteBy", "DeleteDate", "Email", "FirstName", "LastContactDate", "LastName", "PhoneNumber", "StateId", "TypeId", "UpdatedBy", "UpdatedDate" },
+                columns: new[] { "Id", "Address", "City", "Country", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Email", "FirstName", "LastContactDate", "LastName", "PhoneNumber", "StateId", "TypeId", "UpdatedBy", "UpdatedDate" },
                 values: new object[,]
                 {
                     { 1, "Hamitler mah.", "Bursa", "Türkiye", null, null, null, null, "ahmet@mail.com", "Ahmet Yusuf", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Birdir", "05558978804", 3, 4, null, null },

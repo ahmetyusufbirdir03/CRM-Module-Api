@@ -1,8 +1,8 @@
-﻿using Shared.Bases;
+﻿using CrmModuleApi.Shared.Bases;
 
 namespace Domain.Entities;
 
-public class Customer : BaseEntity
+public class Customer : EntityBase
 {
     public int Id { get; set; }
     public string FirstName { get; set; }
