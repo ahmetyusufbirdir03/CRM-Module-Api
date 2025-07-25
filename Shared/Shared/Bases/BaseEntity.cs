@@ -1,6 +1,6 @@
 ﻿namespace Shared.Bases;
 
-public abstract class BaseEntity
+public abstract class BaseEntity : IEntityBase
 {
     public DateTime? CreatedDate { get; set; }
     public string? CreatedBy { get; set; }
