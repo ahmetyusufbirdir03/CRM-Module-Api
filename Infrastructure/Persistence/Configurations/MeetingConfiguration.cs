@@ -1,69 +1,59 @@
-﻿using Bogus;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Persistence.Configurations;
-
-public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
+namespace Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<Meeting> builder)
+    public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
     {
-        // Primary Key
-        builder.HasKey(m => m.Id);
+        public void Configure(EntityTypeBuilder<Meeting> builder)
+        {
+            builder.ToTable("Meetings");
 
-        // Relations
+            builder.HasKey(m => m.Id);
 
-        // Customer ile bire çok ilişki (bir müşteri birçok görüşmeye sahip)
-        builder.HasOne(m => m.Customer)
-            .WithMany()
-            .HasForeignKey(m => m.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // Zorunlu alanlar
+            builder.Property(m => m.StartDate)
+                   .IsRequired();
 
-        // User ile bire çok ilişki (bir kullanıcı birçok görüşmeye sahip)
-        builder.HasOne(m => m.User)
-            .WithMany()
-            .HasForeignKey(m => m.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(m => m.EndDate)
+                   .IsRequired();
 
-        // MeetingType ile bire çok ilişki
-        builder.HasOne(m => m.MeetingType)
-            .WithMany()
-            .HasForeignKey(m => m.TypeId)
-            .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(m => m.Description)
+                   .IsRequired()
+                   .HasMaxLength(500);  // İstersen uzunluk sınırı koyabilirsin
 
-        // MeetingFormat ile bire çok ilişki
-        builder.HasOne(m => m.MeetingFormat)
-            .WithMany()
-            .HasForeignKey(m => m.FormatId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // İlişkiler
 
-        // MeetingState ile bire çok ilişki
-        builder.HasOne(m => m.MeetingState)
-            .WithMany()
-            .HasForeignKey(m => m.StateId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // Customer ile 1-to-many ilişki
+            builder.HasOne(m => m.Customer)
+                   .WithMany()  // Eğer Customer içinde Meetings koleksiyonu yoksa boş bırakabilirsin
+                   .HasForeignKey(m => m.CustomerId)
+                   .OnDelete(DeleteBehavior.NoAction); 
 
-        // MeetingContent ile bire çok ilişki
-        builder.HasOne(m => m.MeetingContent)
-            .WithMany()
-            .HasForeignKey(m => m.ContentId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // User (AppUser) ile 1-to-many ilişki
+            builder.HasOne(m => m.User)
+                   .WithMany() // AppUser içinde Meetings koleksiyonu varsa ekleyebilirsin
+                   .HasForeignKey(m => m.UserId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
-        // MeetingParticipation koleksiyonu (bire çok)
-        builder.HasMany(m => m.MeetingParticipations)
-            .WithOne(mp => mp.Meeting)
-            .HasForeignKey(mp => mp.MeetingId)
-            .OnDelete(DeleteBehavior.Cascade);
+            // MeetingType ile ilişki
+            builder.HasOne(m => m.MeetingType)
+                   .WithMany()
+                   .HasForeignKey(m => m.TypeId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
-        // Tarih alanları için opsiyonel ayarlar
-        builder.Property(m => m.StartDate)
-            .IsRequired();
+            // MeetingFormat ile ilişki
+            builder.HasOne(m => m.MeetingFormat)
+                   .WithMany()
+                   .HasForeignKey(m => m.FormatId)
+                   .OnDelete(DeleteBehavior.NoAction);
 
-        builder.Property(m => m.EndDate)
-            .IsRequired();
-
-        Faker faker = new();
-
+            // MeetingState ile ilişki
+            builder.HasOne(m => m.MeetingState)
+                   .WithMany()
+                   .HasForeignKey(m => m.StateId)
+                   .OnDelete(DeleteBehavior.NoAction);
+        }
     }
 }

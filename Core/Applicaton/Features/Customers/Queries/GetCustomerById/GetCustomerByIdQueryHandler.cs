@@ -24,10 +24,14 @@ public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQueryR
     public async Task<ResponseDto<CustomerResponseDto>> Handle(GetCustomerByIdQueryRequest request, CancellationToken cancellationToken)
     {
         var customer = await unitOfWork.GetGenericRepository<Customer>().GetByIdAsync(request.Id);
+
         if (customer is null)
             return ResponseDto<CustomerResponseDto>.Fail(StatusCodes.Status404NotFound, errorMessageService.CustomerNotFound);
-            
-        var response = mapper.Map<CustomerResponseDto   >(customer);
+
+        if(customer.DeletedBy != null)
+            return ResponseDto<CustomerResponseDto>.Fail(StatusCodes.Status404NotFound, errorMessageService.AlreadyDeleted);
+
+        var response = mapper.Map<CustomerResponseDto>(customer);
 
         return ResponseDto<CustomerResponseDto>.Success(StatusCodes.Status200OK, response);
     }

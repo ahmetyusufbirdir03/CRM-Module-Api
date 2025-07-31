@@ -11,15 +11,15 @@ public class Meeting : EntityBase
     public AppUser User { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public string Description { get; set; }
+
     public int TypeId { get; set; }
     public MeetingType MeetingType { get; set; }
+
     public int FormatId { get; set; }
     public MeetingFormat MeetingFormat { get; set; }
+
     public int StateId { get; set; }
     public MeetingState MeetingState { get; set; }
-    public int ContentId { get; set; }
-    public MeetingContent MeetingContent { get; set; }
-    public ICollection<MeetingParticipation> MeetingParticipations { get; set; }
-
 
 }

@@ -9,6 +9,7 @@ public class AppUser : IdentityUser<int>
     public string? Address { get; set; }
     public string Department { get; set; }
     public string Title { get; set; }
-    public ICollection<MeetingParticipation> MeetingParticipations { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 
 }

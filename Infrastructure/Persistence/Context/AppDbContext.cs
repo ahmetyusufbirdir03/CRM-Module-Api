@@ -1,28 +1,32 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 using System.Reflection;
+using System.Security.Claims;
 
 namespace Persistence.Context;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly string userEmail;
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options, 
+        IHttpContextAccessor httpContextAccessor) : base(options)
     {
+        this.httpContextAccessor = httpContextAccessor;
+        this.userEmail = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value ?? "System";
     }
-
-    DbSet<Meeting> Meetings { get; set; }
-    DbSet<MeetingContent> MeetingContents { get; set; }
-    DbSet<MeetingState> MeetingStates { get; set; }
-    DbSet<MeetingType> MeetingTypes { get; set; }
-    DbSet<MeetingFormat> MeetingFormat { get; set; }
-
-    DbSet<MeetingParticipation> MeetingParticipation { get; set; }
-
-    DbSet<Customer> Customers { get; set; }
-    DbSet<CustomerType> CustomerTypes { get; set; }
-    DbSet<CustomerState> CustomerState { get; set; }
-    DbSet<ForwardPlan> ForwardPlan { get; set; }
+    
+    public DbSet<Meeting> Meetings { get; set; }
+    public DbSet<MeetingState> MeetingStates { get; set; }
+    public DbSet<MeetingType> MeetingTypes { get; set; }
+    public DbSet<MeetingFormat> MeetingFormat { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<CustomerType> CustomerTypes { get; set; }
+    public DbSet<CustomerState> CustomerState { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,8 +35,20 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        modelBuilder.Entity<Customer>()
+        .HasIndex(c => c.Email)
+        .IsUnique()
+        .HasDatabaseName("UX_Customers_Email")
+        .HasFilter("[DeletedBy] IS NULL");
+
+        modelBuilder.Entity<Customer>()
+        .HasIndex(c => c.PhoneNumber)
+        .IsUnique()
+        .HasDatabaseName("UX_Customers_PhoneNumber")
+        .HasFilter("[DeletedBy] IS NULL");
+
         modelBuilder.Entity<MeetingType>().HasData(
-            new MeetingType {Id = 1, Type = "Sales Meeting" },
+            new MeetingType { Id = 1, Type = "Sales Meeting" },
             new MeetingType { Id = 2, Type = "Proposal" },
             new MeetingType { Id = 3, Type = "Customer Support" },
             new MeetingType { Id = 4, Type = "Contract Signing" },
@@ -71,8 +87,47 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
             new CustomerState { Id = 3, State = "Partner" },
             new CustomerState { Id = 4, State = "Prospect" }
             );
-
-
-
     }
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added ||
+                        e.State == EntityState.Modified ||
+                        e.State == EntityState.Deleted);
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                var createdDateProp = entry.Entity.GetType().GetProperty("CreatedDate");
+                createdDateProp?.SetValue(entry.Entity, DateTime.UtcNow);
+                    
+                var createdByProp = entry.Entity.GetType().GetProperty("CreatedBy");
+                createdByProp?.SetValue(entry.Entity, userEmail);
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                var updatedDateProp = entry.Entity.GetType().GetProperty("UpdatedDate");
+                updatedDateProp?.SetValue(entry.Entity, DateTime.UtcNow);
+
+                var updatedByProp = entry.Entity.GetType().GetProperty("UpdatedBy");
+                updatedByProp?.SetValue(entry.Entity, userEmail);
+            }
+
+            if (entry.State == EntityState.Deleted)
+            {
+                var deletedDateProp = entry.Entity.GetType().GetProperty("DeletedDate");
+                deletedDateProp?.SetValue(entry.Entity, DateTime.UtcNow);
+
+                var deletedByProp = entry.Entity.GetType().GetProperty("DeletedBy");
+                deletedByProp?.SetValue(entry.Entity, userEmail);
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+
 }
+

@@ -24,9 +24,11 @@ public class GetAllCustomersQueryHandler : IRequestHandler<GetAllCustomersQueryR
 
     public async Task<ResponseDto<IList<CustomerResponseDto>>> Handle(GetAllCustomersQueryRequest request, CancellationToken cancellationToken)
     {
-        List<Customer> customers = await unitOfWork.GetGenericRepository<Customer>().GetAllAsync();
+        List<Customer> customers = await unitOfWork.GetGenericRepository<Customer>().GetAllAsync(x => x.DeletedBy == null);
+
         if (customers is null)
             return ResponseDto<IList<CustomerResponseDto>>.Fail(StatusCodes.Status404NotFound, errorMessageService.CustomersNotFound);
+
         IList<CustomerResponseDto> response = mapper.Map<IList<CustomerResponseDto>>(customers);
 
         return ResponseDto<IList<CustomerResponseDto>>.Success(StatusCodes.Status200OK, response);

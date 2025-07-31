@@ -23,32 +23,20 @@ public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerComman
     }
     public async Task<ResponseDto<CustomerResponseDto>> Handle(CreateCustomerCommandRequest request, CancellationToken cancellationToken)
     {
-        var customer = await unitOfWork.GetGenericRepository<Customer>().GetAllAsync(
-            c => c.PhoneNumber == request.PhoneNumber || 
-            c.Email == request.Email);
-        if (customer.Any())
+        var customers = await unitOfWork
+            .GetGenericRepository<Customer>()
+            .GetAllAsync(c => (c.PhoneNumber == request.PhoneNumber || 
+            c.Email == request.Email) && c.DeletedBy == null);
+
+
+        if (customers.Any())
             return ResponseDto<CustomerResponseDto>.Fail(StatusCodes.Status409Conflict, errorMessageService.CustomerAlreadyExist);
+        
+        var customer = mapper.Map<Customer>(request);
 
-        Customer _customer = new()
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            PhoneNumber = request.PhoneNumber,
-            Email = request.Email,
-            City = request.City,
-            Country = request.Country,
-            Address = request.Address,
-            LastContactDate = DateTime.UtcNow,
-            TypeId = request.TypeId,
-            StateId = request.StateId,
-            CreatedDate = DateTime.UtcNow,
-            CreatedBy = "Admin"
-        };
+        await unitOfWork.GetGenericRepository<Customer>().CreateAsync(customer);
 
-        await unitOfWork.GetGenericRepository<Customer>().CreateAsync(_customer);
-        await unitOfWork.SaveChangesAsync();
-
-        var response = mapper.Map<CustomerResponseDto>(_customer);
+        var response = mapper.Map<CustomerResponseDto>(customer);
 
         return ResponseDto<CustomerResponseDto>.Success(StatusCodes.Status200OK, response);
     }
