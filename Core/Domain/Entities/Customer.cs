@@ -17,7 +17,6 @@ public class Customer : EntityBase
     public CustomerType CustomerType { get; set; }
     public int StateId { get; set; }
     public CustomerState CustomerState { get; set; }
-    public ICollection<MeetingParticipation> MeetingParticipations { get; set; }
 
 
 }

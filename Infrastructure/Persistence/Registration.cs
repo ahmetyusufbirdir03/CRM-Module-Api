@@ -26,7 +26,7 @@ public static class Registration
             .AddIdentityCore<AppUser>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;
-                opt.Password.RequiredLength = 2;
+                opt.Password.RequiredLength = 6;
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireDigit = false;

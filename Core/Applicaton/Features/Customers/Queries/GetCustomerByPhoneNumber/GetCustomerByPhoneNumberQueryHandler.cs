@@ -1,8 +1,10 @@
 ﻿using Applicaton.DTOs;
 using Applicaton.DTOs.Customer;
+using Applicaton.Features.Customers.Rules;
 using Applicaton.Interfaces.UnitOfWorks;
 using AutoMapper;
 using CrmModuleApi.Shared.ErrorMessages;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -23,9 +25,12 @@ public class GetCustomerByPhoneNumberQueryHandler : IRequestHandler<GetCustomerB
 
     public async Task<ResponseDto<CustomerResponseDto>> Handle(GetCustomerByPhoneNumberQueryRequest request, CancellationToken cancellationToken)
     {
-        var customer = await unitOfWork.CustomerRepository.GetByPhoneNumberAsync(request.PhoneNumber);
-        if (customer is null)
+        var customers = await unitOfWork.GetGenericRepository<Customer>().GetAllAsync(c => c.PhoneNumber == request.PhoneNumber && c.DeletedBy == null);
+
+        if (!customers.Any())
             return ResponseDto<CustomerResponseDto>.Fail(StatusCodes.Status404NotFound, errorMessageService.CustomerNotFound);
+
+        var customer = customers.FirstOrDefault();
 
         var response = mapper.Map<CustomerResponseDto>(customer);
 
